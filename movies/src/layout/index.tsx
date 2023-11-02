@@ -7,7 +7,7 @@ const Layout = (props: PropsWithChildren) => {
         <Box>
             {/* <img src={reactLogo} /> */}
             <GlobalNavigationBar />
-            {/* <Box>{props.children}</Box> */}
+            <Box>{props.children}</Box>
         </Box>
     );
 };

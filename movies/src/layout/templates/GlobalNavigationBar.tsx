@@ -1,9 +1,10 @@
-import { Box, Button, Collapse, Link, ListItem, Stack, styled } from '@mui/material';
+import { Box, Button, Collapse, Link, ListItem, ListItemButton, Stack, styled } from '@mui/material';
 import LogoMobile from '/src/assets/logo_mo.svg';
 import LogoDesktop from '/src/assets/logo_pc.svg';
-import { ROUTE_PATH } from '../../libs/data/path';
+import { NAVIGATION } from '../../libs/data/navigation';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Aside = styled(Box)({
     display: 'flex',
@@ -46,10 +47,6 @@ const Aside = styled(Box)({
         '&:hover': {
             color: 'rgb(33, 43, 54)',
         },
-    },
-    '& .aside-content-link': {
-        textDecoration: 'none',
-        color: 'inherit',
     },
     '& .aside-content-button': {
         display: 'flex',
@@ -140,6 +137,7 @@ interface I_openProps {
     [id: string]: boolean;
 }
 const GlobalNavigationBar = () => {
+    const navigate = useNavigate();
     const [open, setOpen] = useState<I_openProps>({});
 
     const _onClickExpandButton = (e: MouseEvent<HTMLButtonElement>) => {
@@ -163,6 +161,27 @@ const GlobalNavigationBar = () => {
         }
     };
 
+    useEffect(() => {
+        Object.keys(NAVIGATION).map((key) => {
+            const path = NAVIGATION[key];
+
+            if (path.children !== undefined) {
+                const depth1 = path.children;
+
+                Object.keys(depth1).map((depth1Key) => {
+                    const depth1Child = depth1[depth1Key];
+
+                    if (location.pathname.indexOf(depth1Child.href) > -1) {
+                        const copiedOpen = { ...open };
+                        copiedOpen[depth1Child.id] = !copiedOpen[depth1Child.id];
+
+                        setOpen(copiedOpen);
+                    }
+                });
+            }
+        });
+    }, []);
+
     return (
         <Aside>
             <Link href='/'>
@@ -172,8 +191,8 @@ const GlobalNavigationBar = () => {
                 </Box>
             </Link>
             <Stack className='aside-section'>
-                {Object.keys(ROUTE_PATH).map((key) => {
-                    const path = ROUTE_PATH[key];
+                {Object.keys(NAVIGATION).map((key) => {
+                    const path = NAVIGATION[key];
 
                     if (path.navShow) {
                         return (
@@ -183,18 +202,20 @@ const GlobalNavigationBar = () => {
                                 </ListItem>
                                 <Collapse in={!open[path.id]}>
                                     {path.children !== undefined &&
-                                        Object.keys(path.children).map((depth1Key, depth1Idx) => {
+                                        Object.keys(path.children).map((depth1Key) => {
                                             if (path.children !== undefined) {
                                                 const depth1 = path.children[depth1Key];
-
-                                                console.log(depth1Idx);
 
                                                 if (depth1.children !== undefined) {
                                                     return (
                                                         <Box key={depth1.id}>
                                                             <ListItem
                                                                 component={'button'}
-                                                                className={`aside-content-button expand-button ${depth1.isSelected && 'aside-depth1-selected'}`}
+                                                                className={`
+                                                                    aside-content-button
+                                                                    expand-button
+                                                                    ${location.pathname.indexOf(depth1.href) > -1 && 'aside-depth1-selected'}
+                                                                    ${open[depth1.id] && 'expanded'}`}
                                                                 id={depth1.id}
                                                                 onClick={_onClickExpandButton}
                                                             >
@@ -212,22 +233,22 @@ const GlobalNavigationBar = () => {
                                                                 {Object.keys(depth1.children).map((depth2Key) => {
                                                                     if (depth1.children !== undefined) {
                                                                         const depth2 = depth1.children[depth2Key];
-                                                                        location.pathname === depth2.href && (depth1.isSelected = true);
 
                                                                         return (
-                                                                            <Link key={depth2.id} href={depth2.href} className='aside-content-link'>
-                                                                                <Button
-                                                                                    component={'div'}
-                                                                                    className={`aside-content-button ${location.pathname === depth2.href && 'aside-selected'}`}
-                                                                                >
-                                                                                    <Box component={'span'} className='aside-link-icon dot'></Box>
-                                                                                    <Box component={'span'} className='aside-link-title'>
-                                                                                        <Box component={'span'} className='aside-link-label'>
-                                                                                            {depth2.title}
-                                                                                        </Box>
+                                                                            <ListItemButton
+                                                                                key={depth2.id}
+                                                                                component={'li'}
+                                                                                role={'button'}
+                                                                                className={`aside-content-button ${location.pathname === depth2.href && 'aside-selected'}`}
+                                                                                onClick={() => navigate(depth2.href)}
+                                                                            >
+                                                                                <Box component={'span'} className='aside-link-icon dot'></Box>
+                                                                                <Box component={'span'} className='aside-link-title'>
+                                                                                    <Box component={'span'} className='aside-link-label'>
+                                                                                        {depth2.title}
                                                                                     </Box>
-                                                                                </Button>
-                                                                            </Link>
+                                                                                </Box>
+                                                                            </ListItemButton>
                                                                         );
                                                                     }
                                                                 })}
@@ -236,21 +257,22 @@ const GlobalNavigationBar = () => {
                                                     );
                                                 } else {
                                                     return (
-                                                        <Link key={depth1.id} href={depth1.href} className='aside-content-link' id={depth1.id}>
-                                                            <Button
-                                                                component={'div'}
-                                                                className={`aside-content-button ${location.pathname === depth1.href && 'aside-depth1-selected'}`}
-                                                            >
-                                                                <Box component={'span'} className='aside-link-icon'>
-                                                                    {depth1.icon !== undefined && depth1.icon !== null && <depth1.icon className='aside-link-svg' />}
+                                                        <ListItemButton
+                                                            key={depth1.id}
+                                                            component={'li'}
+                                                            role={'button'}
+                                                            className={`aside-content-button ${location.pathname === depth1.href && 'aside-depth1-selected'}`}
+                                                            onClick={() => navigate(depth1.href)}
+                                                        >
+                                                            <Box component={'span'} className='aside-link-icon'>
+                                                                {depth1.icon !== undefined && depth1.icon !== null && <depth1.icon className='aside-link-svg' />}
+                                                            </Box>
+                                                            <Box component={'span'} className='aside-link-title'>
+                                                                <Box component={'span'} className='aside-link-label'>
+                                                                    {depth1.title}
                                                                 </Box>
-                                                                <Box component={'span'} className='aside-link-title'>
-                                                                    <Box component={'span'} className='aside-link-label'>
-                                                                        {depth1.title}
-                                                                    </Box>
-                                                                </Box>
-                                                            </Button>
-                                                        </Link>
+                                                            </Box>
+                                                        </ListItemButton>
                                                     );
                                                 }
                                             }

@@ -4,7 +4,7 @@ import LogoDesktop from '/src/assets/logo_pc.svg';
 import MovieIcon from '@mui/icons-material/Movie';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import { useNavigate } from 'react-router-dom';
-import { ROUTE_PATH } from '../../libs/data/path';
+import { NAVIGATION } from '../../libs/data/navigation';
 import ThumbUpRoundedIcon from '@mui/icons-material/ThumbUpRounded';
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import EqualizerRoundedIcon from '@mui/icons-material/EqualizerRounded';

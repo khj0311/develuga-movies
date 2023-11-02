@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { BrowserRouter } from 'react-router-dom';
 
 const client = new ApolloClient({
     uri: 'http://localhost:4000/graphql',
@@ -21,10 +22,12 @@ const client = new ApolloClient({
 //   })
 //   .then((result) => console.log(result));
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-        <ApolloProvider client={client}>
-            <App />
-        </ApolloProvider>
+        <BrowserRouter>
+            <ApolloProvider client={client}>
+                <App />
+            </ApolloProvider>
+        </BrowserRouter>
     </React.StrictMode>
 );
