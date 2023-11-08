@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+    "name": "AEM",
+    "description": "Easily move across AEM environments.",
+    "version": "1.0",
+    "icons": {
+        "16": "src/images/32.png",
+        "32": "src/images/32.png",
+        "48": "src/images/32.png",
+        "128": "src/images/32.png"
+    },
+    "action": {
+        "default_icon": "src/images/32.png",
+        "default_title": "AEM",
+        "default_popup": "src/index.html"
+    },
+    "permissions": ["storage", "activeTab", "tabs"]
+}

@@ -1,10 +1,11 @@
-import { Box, Button, Collapse, Link, ListItem, ListItemButton, Stack, styled } from '@mui/material';
+import { Box, Button, Collapse, IconButton, ListItem, ListItemButton, Stack, styled } from '@mui/material';
 import LogoMobile from '/src/assets/logo_mo.svg';
 import LogoDesktop from '/src/assets/logo_pc.svg';
 import { NAVIGATION } from '../../libs/data/navigation';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import { MouseEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import PushPinRoundedIcon from '@mui/icons-material/PushPinRounded';
 
 const Aside = styled(Box)({
     display: 'flex',
@@ -13,12 +14,24 @@ const Aside = styled(Box)({
     top: 0,
     left: 0,
     zIndex: 10,
-    // width: '88px',
     width: '280px',
     height: '100%',
     backgroundColor: 'rgb(255, 255, 255)',
     borderRight: '1px dashed rgba(145, 158, 171, 0.2)',
     overflowY: 'auto',
+    '& .aside-header': {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '24px 12px 12px 28px',
+        '&__wrap': {
+            display: 'flex',
+            marginRight: '20px',
+        },
+        '&__logo': {
+            width: '100%',
+        },
+    },
     '& .aside-section': {
         display: 'flex',
         flexDirection: 'column',
@@ -41,7 +54,8 @@ const Aside = styled(Box)({
         color: 'rgb(145, 158, 171)',
         marginBottom: '4px',
         padding: '16px 8px 8px 12px',
-        transition: 'color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+        transition: 'color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, opacity 0.2s ease',
+        opacity: 1,
         border: 'none',
         backgroundColor: 'transparent',
         '&:hover': {
@@ -78,7 +92,7 @@ const Aside = styled(Box)({
         width: '20px',
         height: '20px',
         flexShrink: '0',
-        marginRight: '16px',
+        margin: '0',
         '&.dot': {
             display: 'flex',
             alignItems: 'center',
@@ -131,6 +145,38 @@ const Aside = styled(Box)({
         color: 'rgb(0, 167, 111) !important',
         backgroundColor: 'rgba(0, 167, 111, 0.08) !important',
     },
+    '&.navigation-collpased': {
+        width: '88px',
+        '& .aside-header': {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '24px 12px 12px',
+            '&__wrap': {
+                display: 'flex',
+                marginRight: '0',
+            },
+            '&__logo': {
+                width: '100%',
+            },
+            '&__pin': {
+                display: 'none',
+            },
+        },
+        '& .aside-content-title': {
+            opacity: 0,
+        },
+        '& .aside-content-button': {
+            padding: '8px 4px',
+            justifyContent: 'center',
+        },
+        '& .aside-link-icon': {
+            margin: '0',
+        },
+        '& .aside-link-title': {
+            display: 'none',
+        },
+    },
 });
 
 interface I_openProps {
@@ -138,7 +184,20 @@ interface I_openProps {
 }
 const GlobalNavigationBar = () => {
     const navigate = useNavigate();
+    const [collapsed, setCollapsed] = useState<boolean>(false);
     const [open, setOpen] = useState<I_openProps>({});
+
+    const _onClickNavigationPin = (e: MouseEvent<HTMLButtonElement>) => {
+        setCollapsed(!collapsed);
+    };
+
+    const _onMouseOverNavigation = (e: MouseEvent<HTMLDivElement>) => {
+        setCollapsed(false);
+    };
+
+    const _onMouseLeaveNavigation = (e: MouseEvent<HTMLDivElement>) => {
+        setCollapsed(true);
+    };
 
     const _onClickExpandButton = (e: MouseEvent<HTMLButtonElement>) => {
         const target = e.currentTarget;
@@ -183,13 +242,17 @@ const GlobalNavigationBar = () => {
     }, []);
 
     return (
-        <Aside>
-            <Link href='/'>
-                <Box sx={{ padding: '24px 28px 12px' }}>
-                    <img src={LogoDesktop} />
-                    {/* <img src={LogoMobile} /> */}
+        <Aside className={`${collapsed && 'navigation-collpased'}`} onMouseOver={_onMouseOverNavigation} onMouseLeave={_onMouseLeaveNavigation}>
+            <Box className='aside-header'>
+                <Box className='aside-header__wrap'>
+                    <Link style={{ display: 'flex' }} to={'/'}>
+                        {!collapsed ? <img className='aside-header__logo' src={LogoDesktop} /> : <img src={LogoMobile} />}
+                    </Link>
                 </Box>
-            </Link>
+                <IconButton className='aside-header__pin' sx={!collapsed ? { transform: 'rotate(45deg)' } : null} onClick={_onClickNavigationPin}>
+                    <PushPinRoundedIcon fontSize='small' />
+                </IconButton>
+            </Box>
             <Stack className='aside-section'>
                 {Object.keys(NAVIGATION).map((key) => {
                     const path = NAVIGATION[key];
