@@ -14,5 +14,5 @@
         "default_title": "AEM",
         "default_popup": "src/index.html"
     },
-    "permissions": ["storage", "activeTab", "tabs"]
+    "permissions": ["storage", "activeTab", "tabs", "scripting"]
 }
