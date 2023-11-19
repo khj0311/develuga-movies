@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client';
 import Layout from './layout';
 import Router from './router';
+import './styles/index.css';
 
 const GET_MOVIES = gql`
     query {
