@@ -1,180 +1,26 @@
-import { Box, Button, Collapse, IconButton, ListItem, ListItemButton, Stack, Typography, styled } from '@mui/material';
-import LogoMobile from '/src/assets/logo_mo.svg';
-import LogoDesktop from '/src/assets/logo_pc.svg';
-import { NAVIGATION } from '../../libs/data/navigation';
+import { Box, Collapse, IconButton, ListItem, ListItemButton, Stack, styled } from '@mui/material';
+import LogoDesktopCol from '/src/assets/logo_mo.svg';
+import LogoDesktopExpand from '/src/assets/logo_pc.svg';
+import { NAVIGATION } from '../../../../libs/data/navigation';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import PushPinRoundedIcon from '@mui/icons-material/PushPinRounded';
-
-const Aside = styled(Box)({
-    height: '100vh',
-    position: 'fixed',
-    width: '280px',
-    transition: 'all 0.2s ease 0s',
-    zIndex: 10,
-    backgroundColor: 'rgb(255, 255, 255)',
-    borderRight: '1px dashed rgba(145, 158, 171, 0.2)',
-    '& .aside-header': {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '24px 16px 8px 16px',
-        height: '70px',
-        '&-wrapper': {
-            display: 'flex',
-            '& img': {
-                height: '38px',
-            },
-        },
-    },
-    '& .aside-container': {
-        overflowX: 'hidden',
-        height: 'calc(100vh - 70px)',
-    },
-    '& .aside-wrapper': {
-        padding: '0 16px',
-        height: '100%',
-    },
-    '& .aside-section-title': {
-        boxSizing: 'border-box',
-        listStyle: 'none',
-        fontSize: '0.825rem',
-        cursor: 'pointer',
-        fontWeight: 700,
-        lineHeight: 1.5,
-        textTransform: 'uppercase',
-        fontFamily: '"Public Sans", sans-serif',
-        display: 'inline-flex',
-        color: 'rgb(145, 158, 171)',
-        marginBottom: '4px',
-        padding: '16px 8px 8px 12px',
-        transition: 'all 0.2s ease 0s',
-        // transition: 'color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, opacity 0.2s ease',
-        opacity: 1,
-        border: 'none',
-        backgroundColor: 'transparent',
-        whiteSpace: 'nowrap',
-        '&:hover': {
-            color: 'rgb(33, 43, 54)',
-        },
-    },
-    '& .aside-item-button': {
-        margin: '0px 0px 4px',
-        appearance: 'none',
-        height: '44px',
-        width: '100%',
-        borderRadius: '8px',
-        padding: '0px 18px',
-        justifyContent: 'space-between',
-        transition: 'all 0.15s ease 0s',
-        color: 'rgb(99, 115, 129)',
-        backgroundColor: 'transparent',
-        minWidth: 0,
-        '&__icon': {
-            userSelect: 'none',
-            width: '1em',
-            height: '1em',
-            display: 'inline-block',
-            fill: 'currentcolor',
-            flexShrink: 0,
-            transition: 'fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-            fontSize: '18px',
-            marginRight: '4px',
-            '&.dot': {
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                '&:before': {
-                    content: '""',
-                    width: '4px',
-                    height: '4px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgb(145, 158, 171)',
-                    transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
-                },
-            },
-        },
-        '&__title': {
-            whiteSpace: 'nowrap',
-            paddingLeft: '0.8rem',
-            transition: 'all 0.15s ease 0s',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-        },
-        '&__blank': {
-            marginLeft: 'auto',
-            marginRight: 'auto',
-        },
-        '&__depth1': {
-            display: 'flex',
-            alignItems: 'center',
-        },
-        '&__expand': {
-            transition: 'all 0.2s ease 0s',
-            transform: 'rotate(-90deg)',
-        },
-        '&.expanded': {
-            color: 'rgb(33, 43, 54)',
-            backgroundColor: 'rgba(145, 158, 171, 0.08)',
-            '& .aside-item-button__expand': {
-                transform: 'rotate(0)',
-            },
-        },
-    },
-    '& .aside-depth1-selected': {
-        color: 'rgb(0, 167, 111) !important',
-        backgroundColor: 'rgba(0, 167, 111, 0.08) !important',
-    },
-    '& .aside-selected': {
-        '& .aside-link-label': {
-            color: 'rgb(33, 43, 54)',
-            fontWeight: 600,
-        },
-        '& .dot': {
-            '&:before': {
-                backgroundColor: 'rgb(0, 167, 111)',
-                transform: 'scale(2)',
-            },
-        },
-    },
-    '&.navigation-collpased': {
-        width: '86px',
-        '& .aside-section-title': {
-            opacity: 0,
-            width: 0,
-        },
-        '& .aside-item-button': {
-            '&__title': {
-                opacity: 0,
-                width: 0,
-            },
-            '&__expand': {
-                opacity: 0,
-                width: 0,
-            },
-        },
-    },
-});
+import { Aside } from '../../../../styles/common/layout';
 
 interface I_openProps {
     [id: string]: boolean;
 }
 const GlobalNavigationBar = () => {
+    let animCollapse: boolean = false;
     const navigate = useNavigate();
+    const collapseTimeout = useRef<any>();
+    const asideRef = useRef<HTMLDivElement>(null);
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const [open, setOpen] = useState<I_openProps>({});
 
     const _onClickNavigationPin = () => {
         setCollapsed(!collapsed);
-    };
-
-    const _onMouseEnterNavigation = () => {
-        setCollapsed(false);
-    };
-
-    const _onMouseLeaveNavigation = () => {
-        setCollapsed(true);
     };
 
     const _onClickExpandButton = (e: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLAnchorElement>) => {
@@ -219,11 +65,61 @@ const GlobalNavigationBar = () => {
         });
     }, []);
 
+    useEffect(() => {
+        if (asideRef && asideRef.current !== null) {
+            const aside = asideRef.current;
+
+            const _onMouseEnterNavigation = () => {
+                if (!collapsed || !animCollapse) return;
+                if (aside.classList.contains('navigation-collpased')) {
+                    aside.classList.remove('navigation-collpased');
+                }
+
+                clearTimeout(collapseTimeout.current);
+                collapseTimeout.current = setTimeout(() => {
+                    animCollapse = false;
+                }, 200);
+            };
+
+            const _onMouseLeaveNavigation = () => {
+                if (!collapsed || animCollapse) return;
+                if (!aside.classList.contains('navigation-collpased')) {
+                    aside.classList.add('navigation-collpased');
+                }
+
+                clearTimeout(collapseTimeout.current);
+                collapseTimeout.current = setTimeout(() => {
+                    animCollapse = true;
+                }, 200);
+            };
+
+            if (collapsed) {
+                aside.addEventListener('mouseenter', _onMouseEnterNavigation);
+                aside.addEventListener('mouseleave', _onMouseLeaveNavigation);
+            } else {
+                aside.removeEventListener('mouseenter', _onMouseEnterNavigation);
+                aside.removeEventListener('mouseleave', _onMouseLeaveNavigation);
+            }
+
+            return () => {
+                aside.removeEventListener('mouseenter', _onMouseEnterNavigation);
+                aside.removeEventListener('mouseleave', _onMouseLeaveNavigation);
+            };
+        }
+    }, [collapsed]);
+
     return (
-        <Aside className={`aside${collapsed ? ' navigation-collpased' : ''}`}>
+        <Aside ref={asideRef} className='aside'>
             <Box className='aside-header'>
                 <Box className='aside-header-wrapper'>
-                    <img src={LogoMobile} />
+                    <Link className='aside-header-logo' to={'/'}>
+                        <Box className='aside-header-logo__expand'>
+                            <img src={LogoDesktopExpand} />
+                        </Box>
+                        <Box className='aside-header-logo__collapsed'>
+                            <img src={LogoDesktopCol} />
+                        </Box>
+                    </Link>
                 </Box>
                 <IconButton className='aside-header__pin' sx={collapsed ? { transform: 'rotate(45deg)' } : null} onClick={_onClickNavigationPin}>
                     <PushPinRoundedIcon fontSize='small' />

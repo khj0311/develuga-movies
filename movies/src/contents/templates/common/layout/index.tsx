@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 import { PropsWithChildren } from 'react';
-import GlobalNavigationBar from './templates/GlobalNavigationBar';
+import GlobalNavigationBar from '../../../components/common/layout/GlobalNavigationBar';
 
-const Layout = (props: PropsWithChildren) => {
+const LayoutTemplate = (props: PropsWithChildren) => {
     return (
         <Box>
             {/* <img src={reactLogo} /> */}
@@ -12,4 +12,4 @@ const Layout = (props: PropsWithChildren) => {
     );
 };
 
-export default Layout;
+export default LayoutTemplate;

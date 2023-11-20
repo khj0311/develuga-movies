@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
-import Layout from './layout';
+import Layout from './contents/templates/common/layout';
 import Router from './router';
 import './styles/index.css';
 
