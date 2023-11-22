@@ -122,7 +122,7 @@ export const Aside = styled(Box)({
         },
     },
     '& .aside-depth1-selected': {
-        color: 'rgb(32, 183, 219) !important',
+        color: 'rgb(0, 180, 228) !important',
         backgroundColor: 'rgba(122, 201, 173, 0.2) !important',
     },
     '& .aside-selected': {
@@ -133,12 +133,12 @@ export const Aside = styled(Box)({
         },
         '& .dot': {
             '&:before': {
-                backgroundColor: 'rgb(32, 183, 219)',
+                backgroundColor: 'rgb(0, 180, 228)',
                 transform: 'scale(2)',
             },
         },
     },
-    '&.navigation-collpased': {
+    '&.navigation-collapsed': {
         width: '86px',
         '& .aside-header': {
             justifyContent: 'space-between',
@@ -173,5 +173,17 @@ export const Aside = styled(Box)({
                 width: 0,
             },
         },
+    },
+});
+
+export const Contents = styled(Box)({
+    marginLeft: '280px',
+    transition: 'all 0.2s ease 0s',
+    overflow: 'hidden',
+    minHeight: '100vh',
+    padding: '16px',
+    backgroundColor: 'rgb(243, 244, 249)',
+    '&.gnb-collapsed': {
+        marginLeft: '86px',
     },
 });

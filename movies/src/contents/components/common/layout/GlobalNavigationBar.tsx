@@ -71,8 +71,8 @@ const GlobalNavigationBar = () => {
 
             const _onMouseEnterNavigation = () => {
                 if (!collapsed || !animCollapse) return;
-                if (aside.classList.contains('navigation-collpased')) {
-                    aside.classList.remove('navigation-collpased');
+                if (aside.classList.contains('navigation-collapsed')) {
+                    aside.classList.remove('navigation-collapsed');
                 }
 
                 clearTimeout(collapseTimeout.current);
@@ -83,8 +83,8 @@ const GlobalNavigationBar = () => {
 
             const _onMouseLeaveNavigation = () => {
                 if (!collapsed || animCollapse) return;
-                if (!aside.classList.contains('navigation-collpased')) {
-                    aside.classList.add('navigation-collpased');
+                if (!aside.classList.contains('navigation-collapsed')) {
+                    aside.classList.add('navigation-collapsed');
                 }
 
                 clearTimeout(collapseTimeout.current);
@@ -93,10 +93,14 @@ const GlobalNavigationBar = () => {
                 }, 200);
             };
 
+            const contentsEl = document.getElementById('contents');
+
             if (collapsed) {
+                contentsEl && contentsEl.classList.add('gnb-collapsed');
                 aside.addEventListener('mouseenter', _onMouseEnterNavigation);
                 aside.addEventListener('mouseleave', _onMouseLeaveNavigation);
             } else {
+                contentsEl && contentsEl.classList.remove('gnb-collapsed');
                 aside.removeEventListener('mouseenter', _onMouseEnterNavigation);
                 aside.removeEventListener('mouseleave', _onMouseLeaveNavigation);
             }

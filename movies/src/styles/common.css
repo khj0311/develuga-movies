@@ -1,0 +1,8 @@
+.tmdb-content-header {
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.tmdb-content__main-title {
+    font-family: inherit;
+    font-size: 1.5rem;
+}
